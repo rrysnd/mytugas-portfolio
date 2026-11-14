@@ -1,0 +1,108 @@
+/*===== MENU SHOW =====*/ 
+const showMenu = (toggleId, navId) =>{
+    const toggle = document.getElementById(toggleId),
+    nav = document.getElementById(navId)
+
+    if(toggle && nav){
+        toggle.addEventListener('click', ()=>{
+            nav.classList.toggle('show')
+        })
+    }
+}
+showMenu('nav-toggle','nav-menu')
+
+/*==================== REMOVE MENU MOBILE ====================*/
+const navLink = document.querySelectorAll('.nav__link')
+
+function linkAction(){
+    const navMenu = document.getElementById('nav-menu')
+    // When we click on each nav__link, we remove the show-menu class
+    navMenu.classList.remove('show')
+}
+navLink.forEach(n => n.addEventListener('click', linkAction))
+
+/*==================== SCROLL SECTIONS ACTIVE LINK ====================*/
+const sections = document.querySelectorAll('section[id]')
+
+const scrollActive = () =>{
+    const scrollDown = window.scrollY
+
+  sections.forEach(current =>{
+        const sectionHeight = current.offsetHeight,
+              sectionTop = current.offsetTop - 58,
+              sectionId = current.getAttribute('id'),
+              sectionsClass = document.querySelector('.nav__menu a[href*=' + sectionId + ']')
+        
+        if(scrollDown > sectionTop && scrollDown <= sectionTop + sectionHeight){
+            sectionsClass.classList.add('active-link')
+        }else{
+            sectionsClass.classList.remove('active-link')
+        }                                                    
+    })
+}
+window.addEventListener('scroll', scrollActive)
+
+/*===== SCROLL REVEAL ANIMATION =====*/
+const sr = ScrollReveal({
+    origin: 'top',
+    distance: '60px',
+    duration: 2000,
+    delay: 200,
+//     reset: true
+});
+
+sr.reveal('.home__data, .about__img, .skills__subtitle, .skills__text',{}); 
+sr.reveal('.home__img, .about__subtitle, .about__text, .skills__img',{delay: 400}); 
+sr.reveal('.home__social-icon',{ interval: 200}); 
+sr.reveal('.skills__data, .contact__input',{interval: 200});
+sr.reveal('.work__slider', {origin: 'bottom'});
+
+/*==================== LIGHTBOX POPUP ====================*/
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+const lightboxClose = document.getElementById('lightbox-close');
+const galleryImages = document.querySelectorAll('.work__img img');
+const tracks = document.querySelectorAll('.work__track');
+
+galleryImages.forEach(image => {
+    image.addEventListener('click', (e) => {
+        // Mencegah link bawaan (href="") agar tidak reload halaman
+        e.preventDefault(); 
+        
+        // Masukkan src gambar yang diklik ke dalam popup
+        lightboxImg.src = image.src;
+        
+        // Tampilkan popup
+        lightbox.classList.add('show-lightbox');
+        document.body.classList.add('no-scroll'); // Cegah halaman di-scroll saat popup buka
+        
+        // Hentikan animasi gallery sementara waktu
+        tracks.forEach(track => track.style.animationPlayState = 'paused');
+    });
+});
+
+// Fungsi untuk menutup popup
+const closeLightbox = () => {
+    lightbox.classList.remove('show-lightbox');
+    document.body.classList.remove('no-scroll');
+    
+    // Jalankan kembali animasi gallery
+    tracks.forEach(track => track.style.animationPlayState = 'running');
+};
+
+// Tutup saat tombol X diklik
+lightboxClose.addEventListener('click', closeLightbox);
+
+// Tutup saat area luar gambar (background hitam) diklik
+lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) {
+        closeLightbox();
+    }
+});
+
+// Tutup saat tombol 'Escape' di keyboard ditekan
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && lightbox.classList.contains('show-lightbox')) {
+        closeLightbox();
+    }
+});
